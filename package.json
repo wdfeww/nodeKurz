@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/wdfeww/nodeKurz/issues"
   },
-  "homepage": "https://github.com/wdfeww/nodeKurz#readme"
+  "homepage": "https://github.com/wdfeww/nodeKurz#readme",
+  "dependencies": {
+    "express": "^4.16.3"
+  }
 }
