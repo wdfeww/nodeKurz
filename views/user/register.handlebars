@@ -1,0 +1,11 @@
+<form action="/registracia" method="post">
+<label>login</label>
+    <input type="text" name="username" id="username">
+    <label>heslo</label>
+    <input type="password" name="password" id="password">
+    <input
+    type="hidden"
+    name="_csrf"
+    value="{{csrfToken}}"/>
+    <button type="submit">Registruj sa</button>
+</form>

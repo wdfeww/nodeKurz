@@ -2,3 +2,9 @@
 <h3>Price: {{product.price}} $</h3>
 </br>
 <a href="/kategoria/{{category.id}}">Spat na {{category.name}}</a>
+
+<form action="/do-kosika" method="post">
+    <input type="hidden" name="categoryId" value="{{category.id}}">
+    <input type="hidden" name="productId" value="{{product.id}}">
+    <button type="submit">Pridat do kosika</button>
+</form>
