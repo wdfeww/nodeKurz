@@ -1,29 +1,45 @@
 const http = require('http');
 const express = require('express');
+const mongoose = require('mongoose');
+const Category = require('./models/category');
+
+mongoose.Promise = global.Promise;
+const connection_string = `mongodb://eshopuser:eshoppassword@ds031988.mlab.com:31988/eshop`;
 const port = 8010;
 
 const app = express();
 
-const catalog =[
+// const catalog =[
     
-{
-    id:'telefony',
-    name:'Phones',
-    items:[
-        {id:'iphone', name:'Iphone X', price:999},
-        {id:'s9', name:'Samsung S9', price:199}
-    ]
-},
+// {
+//     id:'telefony',
+//     name:'Phones',
+//     items:[
+//         {id:'iphone', name:'Iphone X', price:999},
+//         {id:'s9', name:'Samsung S9', price:199}
+//     ]
+// },
 
-{  
-    id:'tablety',
-    name:'Tablets',
-    items:[
-        {id:'ipad', name:'Ipad Pro', price:993},
-        {id:'s10', name:'Samsung S10', price:599}
-    ]
-}
-];
+// {  
+//     id:'tablety',
+//     name:'Tablets',
+//     items:[
+//         {id:'ipad', name:'Ipad Pro', price:993},
+//         {id:'s10', name:'Samsung S10', price:599}
+//     ]
+// }
+// ];
+
+
+mongoose.connect(connection_string);
+
+   mongoose.connection.on('connected', () => {
+    console.log('Mongo connected');
+   });
+   mongoose.connection.on('disconnected', () => {
+    console.log('Mongo disconnected');
+   });
+
 
 const expressHandlebars = require('express-handlebars');
 const handlebars = expressHandlebars.create({
@@ -52,19 +68,33 @@ app.get('/',(req,res)=>{
     // res.send('Hello Index');
 
 });
-app.get('/kategorie',(req,res)=>{
-    res.render('catalog/categories', {catalog})
+app.get('/kategorie',(req,res,next)=>{
+    Category.find((err, catalog)=>{
+        if(err){
+          return next(err);
+        }
+        res.render('catalog/categories', {catalog})
+    });
+    
 });
 
-app.get('/kategoria/:categoryId',(req,res)=>{
-    const category = catalog.find(c => c.id === req.params.categoryId);
-    res.render('catalog/category', {category})
+app.get('/kategoria/:categoryId',(req,res,next)=>{
+    Category.findOne({id:req.params.categoryId},(err, category)=>{
+        if(err){
+            return next(err);
+          }
+          res.render('catalog/category', {category})
+    } )
 });
 
-app.get('/product/:categoryId/:productId',(req,res)=>{
-    const category = catalog.find(c => c.id === req.params.categoryId);
-    const product = category.items.find(c => c.id === req.params.productId);
-    res.render('catalog/product',{category, product})
+app.get('/product/:categoryId/:productId',(req,res,next)=>{
+    Category.findOne({id:req.params.categoryId},(err, category)=>{
+        if(err){
+            return next(err);
+          }
+          const product = category.items.find(c => c.id === req.params.productId);
+          res.render('catalog/product',{category, product})
+    } )
 });
 
 app.listen(port);
