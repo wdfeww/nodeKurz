@@ -40,7 +40,9 @@ app.use(
         })
     })
 );
+
 require('./configurator/configureCsrf')(app);// na poradi zalezi cize za session, alebo json api
+require('./configurator/configurePassport')(app);
 app.use(( req, res, next)=>{
     res.locals.cartSize = (req.session.cart || [] ).length;
     next();
@@ -50,6 +52,13 @@ app.use(( req, res, next)=>{
     console.log('path', req.url);
     next();
 });
+const cluster = require('cluster');
+app.use(( req, res, next)=>{
+if(cluster && cluster.worker){
+    console.log(cluster.worker.id);
+}
+next();
+});
 
 // const homeRouter = require('./routers/home');
 // app.use(homeRouter);
@@ -58,6 +67,12 @@ app.use(require('./routers/home'));
 app.use(require('./routers/catalog'));
 
 app.use(require('./routers/user'));
+if(module === require.main){
+    app.listen(port);
+}else{
+    module.exports = () =>{
+        app.listen(port);
+    }
+}
 
-app.listen(port);
 console.log(`Running at http://localhost:${port}`)
